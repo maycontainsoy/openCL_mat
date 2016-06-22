@@ -1,25 +1,3 @@
-/* ************************************************************************
-* The MIT License (MIT)
-* Copyright 2014-2015 weifengliu
- 
-*  Permission is hereby granted, free of charge, to any person obtaining a copy
-*  of this software and associated documentation files (the "Software"), to deal
-*  in the Software without restriction, including without limitation the rights
-*  to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-*  copies of the Software, and to permit persons to whom the Software is
-*  furnished to do so, subject to the following conditions:
- 
-*  The above copyright notice and this permission notice shall be included in
-*  all copies or substantial portions of the Software.
- 
-*  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-*  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-*  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-*  AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-*  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-*  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-*  THE SOFTWARE.
-* ************************************************************************ */
 //////////////////////////////////////////////////////////////////////////
 // < A CUDA/OpenCL General Sparse Matrix-Matrix Multiplication Program >
 //
@@ -39,15 +17,11 @@
 #include <string.h>
 #include <math.h>
 
-#include <sys/time.h>
-#include <sys/types.h>
-#include <dirent.h>
+#include <cuda_runtime.h>
+#include <helper_functions.h>
+#include <helper_cuda.h>
 
-#ifdef __APPLE__
-#include "OpenCL/opencl.h"
-#else
-#include "CL/cl.h"
-#endif
+#include "cudatimer.h"
 
 #define BHSPARSE_SUCCESS 0
 
@@ -67,7 +41,7 @@ typedef double   value_type;
 
 #define NUM_BANKS 32
 
-#define WARPSIZE_NV_2HEAP 64
+#define WARPSIZE_NV_2HEAP 32
 
 #define TUPLE_QUEUE 6
 #define MERGELIST_INITSIZE 256
@@ -83,22 +57,5 @@ typedef double   value_type;
 #define GROUPSIZE_1024 1024
 
 #define NUM_SEGMENTS 128
-
-struct bhsparse_timer {
-    timeval t1, t2;
-    struct timezone tzone;
-
-    void start() {
-        gettimeofday(&t1, &tzone);
-    }
-
-    double stop() {
-        gettimeofday(&t2, &tzone);
-        double elapsedTime = 0;
-        elapsedTime = (t2.tv_sec - t1.tv_sec) * 1000.0;      // sec to ms
-        elapsedTime += (t2.tv_usec - t1.tv_usec) / 1000.0;   // us to ms
-        return elapsedTime;
-    }
-};
 
 #endif // COMMON_H
